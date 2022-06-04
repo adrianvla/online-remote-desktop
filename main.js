@@ -4,7 +4,8 @@ var fs = require('fs');
 var crypto = require('crypto');
 const preventSleep = require("node-prevent-sleep");
 var users = [
-    ['admin@morisinc.net', '1234'],
+    ['USER1','PASSWORD1'],
+	['USER2','PASSWORD2']
 ];
 var colors = require('colors');
 var position = {};
