@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
+    <style>
+        .dn {
+            display: none !important;
+        }
+
+        #screen {
+            width: 100%;
+            position: absolute;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="status"></div>
+    <video id="screen" mute autoplay></video>
+    <script>
+        var peer = new Peer();
+        var deskStream;
+
+        $(document).ready(function () {
+
+            navigator.mediaDevices.getDisplayMedia({
+                    video: {
+                        cursor: "always",
+                        width: 1920,
+                        height: 1080,
+                        frameRate: 60
+                    },
+                    audio: {
+                        sampleRate: 44100
+                    }
+                }).then(stream => {
+                    deskStream = stream;
+                    $('#screen')[0].srcObject = stream;
+                    //console.log(stream)
+                })
+                .catch(e => {
+                    // handle any errors
+                    console.log(e)
+                });
+            peer.on('call', function (call) {
+                    console.log('Call recieved');
+                    call.answer(deskStream); 
+                    call.on('stream', function (remoteStream) {
+                        console.log('Remotestream:');
+                        console.log(remoteStream);
+                    });
+            });
+
+        });
+        var flag = true;
+        setInterval(function () {
+            if (flag) {
+                if (peer.id != null) {
+                    $.post('/myid', JSON.stringify({
+                        p: peer.id,
+                        why: 'id'
+                    }), function (data) {
+                        console.log(data);
+                    });
+                    console.log(peer.id);
+                    flag = false;
+                }
+            }
+        }, 200);
+
+        peer.on('connection', function (conn) {
+            console.log('connected')
+            conn.on('data', function (data) {
+                console.log(data);
+            });
+        });
+    </script>
+</body>
+
+</html>

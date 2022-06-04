@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
+    <style>
+        :root {
+            --height: 1080px;
+        }
+
+        .msg-c {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            background: rgba(43, 43, 43, 0.669);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 40px;
+        }
+
+        .msg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            flex-direction: column;
+        }
+
+        .loader {
+            margin-top: 30px;
+            transform: scale(3);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .screen-c {
+            position: absolute;
+            width: 100%;
+            margin: 0;
+            height: var(--height);
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+
+        }
+
+        #konnekt {
+            border: 0;
+            font-size: 30px;
+            transition: all 0.2s ease;
+        }
+
+        #konnekt:hover {
+            font-size: 40px;
+        }
+
+        .dn {
+            display: none !important;
+        }
+
+        video {
+            width: 100%;
+        }
+
+        .bd {
+
+            position: absolute;
+            width: 100%;
+            height: var(--height);
+            margin: 0;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .flscrn {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            top: 0;
+            left: 0;
+            z-index: 999999;
+        }
+
+        #flscrn {
+            height: var(--height);
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="msg-c">
+        <div class="msg">
+            <span id="msg">
+                <button id="konnekt">Connect</button>
+                <span>Tip: press L_alt+R_alt for esc</span>
+            </span>
+            <div class="loader">
+                <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
+                    viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+                    <path opacity="0.2" fill="#000"
+                        d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+              s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+              c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+                    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+              C22.32,8.481,24.301,9.057,26.013,10.047z">
+                        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20"
+                            to="360 20 20" dur="0.5s" repeatCount="indefinite" />
+                    </path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="bd">
+
+        <div class="screen-c dn">
+            <video id="screen" autoplay></video>
+        </div>
+    </div>
+    <div class="flscrn">
+        <canvas id="flscrn"></canvas>
+    </div>
+
+
+
+
+
+    <script>
+        var socket = io();
+        var peer = new Peer();
+        var canvas, ctx;
+        $(document).ready(function () {
+
+            canvas = $('#flscrn')[0];
+            canvas.requestPointerLock = canvas.requestPointerLock ||
+                canvas.mozRequestPointerLock;
+
+            /*
+            cnv = $('#screen')[0];
+            ctx = $('#screen')[0].getContext('2d');*/
+            //ctx.fillRect(0,0,1920,1080);
+
+            peer.on('connection', function (conn) {
+                console.log('connected')
+                conn.on('data', function (data) {
+                    console.log(data);
+                });
+            });
+            $('#flscrn').on('click', function () {
+                canvas.requestPointerLock();
+                $('body')[0].requestFullscreen();
+            });
+
+            document.addEventListener('pointerlockchange', lockChangeAlert, false);
+            document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+
+
+            document.addEventListener('mousedown', function (ev) {
+                console.log('mouse down');
+                if (isConnected) {
+                    HIDevent({
+                        mouse: true, // true => down , false => up
+                        packet: 'mouse',
+                        which:ev.which
+                    });
+
+                }
+            }, false);
+            document.addEventListener('mouseup', function (ev) {
+                console.log('mouse up');
+                if (isConnected) {
+                    HIDevent({
+                        mouse: false, // true => down , false => up
+                        packet: 'mouse',
+                        which:ev.which
+                    });
+
+                }
+            }, false);
+
+            document.addEventListener('keydown', function (ev) {
+                console.log('key down:', ev.code);
+                if (isConnected) {
+                    HIDevent({
+                        key: ev.code,
+                        keyDown: true,
+                        packet: 'key'
+                    });
+
+                }
+            }, false);
+
+            document.addEventListener('keyup', function (ev) {
+                console.log('key up:', ev.code);
+                if (isConnected) {
+                    HIDevent({
+                        key: ev.code,
+                        keyDown: false,
+                        packet: 'key'
+                    });
+
+                }
+            }, false);
+
+            document.addEventListener('wheel', function (ev) {
+                console.log('wheel:', [event.deltaX,event.deltaY]);
+                if (isConnected) {
+                    HIDevent({
+                        wheel: [event.deltaX,event.deltaY],
+                        packet: 'wheel'
+                    });
+
+                }
+            }, false);
+        });
+        function HIDevent(evv){
+            socket.emit('control', {data:evv,d:window.location.pathname.replaceAll('/', '').replaceAll('dashboard', '')});
+        }
+        function lockChangeAlert() {
+            if (document.pointerLockElement === canvas ||
+                document.mozPointerLockElement === canvas) {
+                console.log('The pointer lock status is now locked');
+                isLocked = true;
+                document.addEventListener("mousemove", updatePosition, false);
+            } else {
+                console.log('The pointer lock status is now unlocked');
+                isLocked = false;
+                document.removeEventListener("mousemove", updatePosition, false);
+            }
+        }
+
+        function updatePosition(e) {
+            console.log(e.movementX, e.movementY);
+            if (isConnected) {
+                HIDevent({
+                    deltaMouse: [
+                        e.movementX, e.movementY
+                    ],
+                    packet: 'deltaMouse'
+                });
+
+            }
+
+        }
+        var remoteid = null;
+        var isLocked = false;
+
+        function conc() {
+            $.post('/connect', JSON.stringify({
+                d: window.location.pathname.replaceAll('/', '').replaceAll('dashboard', '')
+            }), function (data) {
+                data = JSON.parse(data);
+                remoteid = data.p;
+                setTimeout(function () {
+                    connect();
+                    console.log('Trying to connect...');
+                }, 500);
+            });
+        }
+
+        var flag = true;
+        setInterval(function () {
+            if (flag) {
+
+                if (peer.id != null) {
+                    conc();
+                    console.log(peer.id);
+                    flag = false;
+                }
+            }
+        }, 200);
+        var con, call;
+        const createMediaStreamFake = () => {
+            return new MediaStream([createEmptyAudioTrack(), createEmptyVideoTrack({
+                width: 640,
+                height: 480
+            })]);
+        }
+
+        const createEmptyAudioTrack = () => {
+            const ctx = new AudioContext();
+            const oscillator = ctx.createOscillator();
+            const dst = oscillator.connect(ctx.createMediaStreamDestination());
+            oscillator.start();
+            const track = dst.stream.getAudioTracks()[0];
+            return Object.assign(track, {
+                enabled: false
+            });
+        }
+
+        const createEmptyVideoTrack = ({
+            width,
+            height
+        }) => {
+            const canvas = Object.assign(document.createElement('canvas'), {
+                width,
+                height
+            });
+            canvas.getContext('2d').fillRect(0, 0, width, height);
+
+            const stream = canvas.captureStream();
+            const track = stream.getVideoTracks()[0];
+
+            return Object.assign(track, {
+                enabled: false
+            });
+        };
+        $('#konnekt').on('click', connect);
+        var isConnected = false;
+
+        function connect() {
+            con = peer.connect(remoteid);
+
+            con.on('open', function () {
+                console.log('OPEN');
+                //con.send('hi');
+                $('#konnekt').remove();
+                call = peer.call(remoteid, createMediaStreamFake());
+                call.on('stream', function (remoteStream) {
+                    remstr=remoteStream;
+                    $('#screen')[0].srcObject = remoteStream;
+                    $('.screen-c').removeClass('dn');
+                    isConnected = true;
+                });
+            });
+        }
+        var mouse = {};
+        var key = getCookie('key').split('');
+        var counter = 0;
+        var remstr;
+        function e(t) {
+            return new Promise(function (resolve, reject) {
+
+                $.post('/ping', JSON.stringify({
+                    d: window.location.pathname.replaceAll('/', '').replaceAll('dashboard', ''),
+                    g: t
+                }), function (data) {
+                    resolve(data);
+                });
+
+            });
+        }
+
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+        var recoflag = false;
+        setInterval(async function () {
+            if (!recoflag) {
+
+                var resp = await e(key[counter % key.length]);
+                resp = JSON.parse(resp);
+                if (resp.status == false) {
+                    alert('DESYNC SECURITY ERROR, reconnecting...');
+                    recoflag = true;
+                    window.location.href = '../';
+                }
+                counter++;
+            }
+        }, 2000);
+        setInterval(function () {
+            $("body").get(0).style.setProperty("--height", $(window).height() + "px");
+        }, 1);
+        // ctx.fillRect(0,0,1920,1080)
+    </script>
+</body>
+
+</html>

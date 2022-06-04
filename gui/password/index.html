@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to Gamestream</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .main {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body {
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .shake {
+            animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        .input {
+            padding: 10px;
+            border-radius: 20px;
+            background-color: #ccc;
+        }
+
+        .input input {
+            background: #00000000;
+            border: 0;
+            font-family: sans-serif;
+            font-size: 20px;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+        header .header {
+            background-color: #fff;
+            height: 45px;
+        }
+
+        header a img {
+            width: 134px;
+            margin-top: 4px;
+        }
+
+        .login-page {
+            width: 360px;
+            padding: 8% 0 0;
+            margin: auto;
+            height: 100%;
+        }
+
+        .login-page .form .login {
+            margin-top: -31px;
+            margin-bottom: 26px;
+        }
+
+        .form {
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            background: #FFFFFF;
+            max-width: 360px;
+            margin: 0 auto 100px;
+            padding: 45px;
+            text-align: center;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+        }
+
+        .form input {
+            font-family: "Roboto", sans-serif;
+            outline: 0;
+            background: #f2f2f2;
+            width: 100%;
+            border: 0;
+            margin: 0 0 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form button {
+            font-family: "Roboto", sans-serif;
+            text-transform: uppercase;
+            outline: 0;
+            background-color: #328f8a;
+            background-image: linear-gradient(45deg, #328f8a, #08ac4b);
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: #FFFFFF;
+            font-size: 14px;
+            -webkit-transition: all 0.3 ease;
+            transition: all 0.3 ease;
+            cursor: pointer;
+        }
+
+        .form .message {
+            margin: 15px 0 0;
+            color: #b3b3b3;
+            font-size: 12px;
+        }
+
+        .form .message a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .login-page-c {
+            min-height: 100%;
+            font-family: "Roboto", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+            width: 100%;
+            position: absolute;
+            background-color: #328f8a;
+            background-image: linear-gradient(45deg, #328f8a, #08ac4b);
+        }
+
+        .dn {
+            display: none !important;
+            opacity: 0 !important;
+        }
+
+        .loader {
+            margin:-10px;
+            display: inline-block;
+            vertical-align: top;
+        }
+        #form button{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:53px;
+        }
+        .loading span{
+            display:none !important;
+        }
+        button:not(.loading) .loader {
+            display:none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-page-c">
+        <div class="login-page">
+            <div class="form">
+                <div class="login">
+                    <div class="login-header">
+                        <h3>LOGIN</h3>
+                        <p>Please enter your credentials to login.</p>
+                    </div>
+                </div>
+                <form class="login-form" id="form">
+                    <input type="text" placeholder="username" id="username" />
+                    <input type="password" placeholder="password" id="password" />
+                    <button class="" id="lgnbtn">
+                        <span>login</span>
+                        <div class="loader">
+                            <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
+                                viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+                                <path opacity="0.2" fill="#000"
+                                    d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+                          s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+                          c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+                                <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+                          C22.32,8.481,24.301,9.057,26.013,10.047z">
+                                    <animateTransform attributeType="xml" attributeName="transform" type="rotate"
+                                        from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite" />
+                                </path>
+                            </svg>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+        $('#form').on('submit', function (e) {
+            var passwd = $('#password').val();
+            var usernm = $('#username').val();
+            e.preventDefault();
+            if (passwd) {
+                u(usernm, passwd);
+            }
+        });
+
+        function u(u, p) {
+            $('#lgnbtn').addClass('loading');
+            $.post('/auth', JSON.stringify({
+                u: u,
+                p: p
+            }), function (data) {
+                $('#lgnbtn').removeClass('loading');
+                var ge = JSON.parse(data);
+                console.log(ge);
+                if (ge.p) {
+                    (async function () {
+                        setCookie('key', ge.k, 1);
+                        window.location.href = '/dashboard/' + ge.t;
+                    })();
+                } else {
+                    $('#lgnbtn').addClass('shake');
+                    setTimeout(function () {
+                        $('#lgnbtn').removeClass('shake');
+                    }, 820);
+                }
+            });
+            $('#passwd').val('');
+        }
+    </script>
+</body>
+
+</html>
