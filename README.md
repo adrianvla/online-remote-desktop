@@ -13,3 +13,18 @@ This project uses peerjs
 
 Everything (ngrok.js excluded) in this project is subject to the <a href="https://creativecommons.org/licenses/by-nc/4.0/"> CC By Nc License</a>
 If you download you agree to this license
+
+
+
+## How To use:
+
+run 
+```bash
+node main.js
+```
+in cmd.
+
+After that open localhost:1337 and allow the page to see your desktop
+
+After that you'll see a link in your console. This is the link of the remote access.
+You can change the username and the password in the main.js file
