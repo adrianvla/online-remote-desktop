@@ -28,3 +28,11 @@ After that open localhost:1337 and allow the page to see your desktop
 
 After that you'll see a link in your console. This is the link of the remote access.
 You can change the username and the password in the main.js file
+Change this:
+```js
+
+var users = [
+    ['USER1','PASSWORD1'],
+	['USER2','PASSWORD2']
+];
+```
