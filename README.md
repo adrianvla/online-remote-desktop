@@ -11,8 +11,6 @@ This project uses peerjs
 ```
 
 
-Everything (ngrok.js excluded) in this project is subject to the <a href="https://creativecommons.org/licenses/by-nc/4.0/"> CC By Nc License</a>
-If you download you agree to this license
 
 
 
@@ -37,3 +35,4 @@ var users = [
 	['USER2','PASSWORD2']
 ];
 ```
+### By using, downloading, adapting in any shape or form this project, you agree to [CC By NC](https://creativecommons.org/licenses/by-nc/4.0/) . This work is licensed under the same license (excluding ngrok.js and NGROK).
